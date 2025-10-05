@@ -26,9 +26,16 @@ export async function GET() {
 
     const files = await listMediaFiles();
 
+    // Filter out config files and homepage folder
+    const mediaFiles = files.filter((file) => {
+      const key = file.Key || "";
+      // Exclude config folder and homepage folder
+      return !key.startsWith("config/") && !key.startsWith("homepage/");
+    });
+
     // Add presigned URLs to each file
     const filesWithUrls = await Promise.all(
-      files.map(async (file) => {
+      mediaFiles.map(async (file) => {
         const url = await generatePresignedDownloadUrl(file.Key!);
         return {
           ...file,
