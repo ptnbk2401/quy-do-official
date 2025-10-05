@@ -71,7 +71,6 @@ export function MediaCard({
           muted
           loop
           preload="none"
-          loading="lazy"
           onMouseEnter={(e) => {
             e.currentTarget.load();
             e.currentTarget.play();
