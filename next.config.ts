@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "200mb",
     },
   },
+  // Tắm ESLint trong production build (uncomment nếu cần)
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
+  // Tắt TypeScript errors trong production build (uncomment nếu cần)
+  // typescript: {
+  //   ignoreBuildErrors: true,
+  // },
 };
 
 export default nextConfig;
