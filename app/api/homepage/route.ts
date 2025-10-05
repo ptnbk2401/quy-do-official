@@ -2,12 +2,22 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { generatePresignedDownloadUrl } from "@/lib/s3";
-import { writeFile, readFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const HOMEPAGE_FILE = path.join(DATA_DIR, "homepage.json");
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
+const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME!;
+const SETTINGS_KEY = "config/homepage.json";
 
 interface HomepageSettings {
   hero: {
@@ -67,21 +77,33 @@ const DEFAULT_SETTINGS: HomepageSettings = {
 
 async function getSettings(): Promise<HomepageSettings> {
   try {
-    if (!existsSync(HOMEPAGE_FILE)) {
-      return DEFAULT_SETTINGS;
+    const command = new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: SETTINGS_KEY,
+    });
+
+    const response = await s3Client.send(command);
+    const data = await response.Body?.transformToString();
+
+    if (data) {
+      return JSON.parse(data);
     }
-    const data = await readFile(HOMEPAGE_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch {
+    return DEFAULT_SETTINGS;
+  } catch (error) {
+    console.log("Settings not found in S3, using defaults:", error);
     return DEFAULT_SETTINGS;
   }
 }
 
 async function saveSettings(settings: HomepageSettings) {
-  if (!existsSync(DATA_DIR)) {
-    await mkdir(DATA_DIR, { recursive: true });
-  }
-  await writeFile(HOMEPAGE_FILE, JSON.stringify(settings, null, 2));
+  const command = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: SETTINGS_KEY,
+    Body: JSON.stringify(settings, null, 2),
+    ContentType: "application/json",
+  });
+
+  await s3Client.send(command);
 }
 
 export const revalidate = 3600; // Cache for 1 hour

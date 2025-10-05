@@ -46,14 +46,15 @@ export function MediaCard({
           </p>
         </div>
       ) : type === "image" && !imageError ? (
-        <>
-          {!imageLoaded && (
-            <div className="shimmer-wrapper w-full aspect-square rounded-lg"></div>
-          )}
+        <div
+          className={`rounded-lg overflow-hidden ${
+            !imageLoaded ? "shimmer-wrapper" : ""
+          }`}
+        >
           <img
             src={url}
             alt={fileName}
-            className={`w-full h-auto block rounded-lg ${
+            className={`w-full h-auto block ${
               imageLoaded ? "image-loaded" : "image-loading"
             }`}
             onError={() => setImageError(true)}
@@ -62,7 +63,7 @@ export function MediaCard({
             decoding="async"
             fetchPriority={eager ? "high" : "low"}
           />
-        </>
+        </div>
       ) : type === "video" ? (
         <video
           src={url}

@@ -9,9 +9,9 @@
     "ctaLink": "/gallery"
   },
   "about": {
-    "image": "homepage/about-1759657932362.jpg",
+    "image": "https://quydo-official-media.s3.ap-southeast-1.amazonaws.com/homepage/about-1759657932362.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAW3MD6QUCBGZXFDNV%2F20251005%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251005T123612Z&X-Amz-Expires=86400&X-Amz-Signature=d314898262f8a9166d5ca9725bbda559765f9c5f63739294ec8dccccca5654a7&X-Amz-SignedHeaders=host&response-cache-control=public%2C%20max-age%3D86400%2C%20immutable&x-amz-checksum-mode=ENABLED&x-id=GetObject",
     "title": "Câu chuyện của chúng tôi",
-    "description": "Quỷ Đỏ Official ra đời từ niềm đam mê bất tận với Manchester United – nơi người hâm mộ cùng chia sẻ và lưu giữ những khoảnh khắc đáng nhớ nhất."
+    "description": "Quỷ Đỏ Official ra đời từ tình yêu và niềm tự hào dành cho Manchester United.\nChúng tôi mong muốn tạo nên một không gian để người hâm mộ Việt Nam cùng nhau chia sẻ, lưu giữ và lan tỏa những khoảnh khắc đáng nhớ nhất của đội bóng huyền thoại này."
   },
   "highlights": {
     "enabled": true,
