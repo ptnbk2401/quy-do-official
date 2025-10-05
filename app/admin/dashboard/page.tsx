@@ -1,69 +1,63 @@
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
-import { listMediaFiles } from "@/lib/s3"
-import Link from "next/link"
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
+import { listMediaFiles } from "@/lib/s3";
+import Link from "next/link";
 
 export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/login")
+    redirect("/login");
   }
 
   // Fetch media stats
-  let totalMedia = 0
-  let totalImages = 0
-  let totalVideos = 0
-  let awsConfigured = true
+  let totalMedia = 0;
+  let totalImages = 0;
+  let totalVideos = 0;
+  let awsConfigured = true;
 
   // Check if AWS is configured
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_S3_BUCKET_NAME) {
-    awsConfigured = false
+  if (
+    !process.env.AWS_ACCESS_KEY_ID ||
+    !process.env.AWS_SECRET_ACCESS_KEY ||
+    !process.env.AWS_S3_BUCKET_NAME
+  ) {
+    awsConfigured = false;
   } else {
     try {
-      const files = await listMediaFiles()
-      totalMedia = files.length
+      const files = await listMediaFiles();
+      totalMedia = files.length;
 
       files.forEach((file) => {
-        const fileName = file.Key || ""
+        const fileName = file.Key || "";
         if (/\.(mp4|mov|avi|webm)$/i.test(fileName)) {
-          totalVideos++
+          totalVideos++;
         } else if (/\.(jpg|jpeg|png|gif|webp)$/i.test(fileName)) {
-          totalImages++
+          totalImages++;
         }
-      })
+      });
     } catch (error) {
-      console.error("Failed to fetch media stats:", error)
-      awsConfigured = false
+      console.error("Failed to fetch media stats:", error);
+      awsConfigured = false;
     }
   }
 
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto p-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold text-[#DA291C]">Admin Dashboard</h1>
-          <div className="flex gap-4">
-            <Link
-              href="/gallery"
-              className="px-4 py-2 bg-[#2E2E2E] hover:bg-[#DA291C] rounded-lg transition-colors"
-            >
-              View Gallery
-            </Link>
-            <Link
-              href="/"
-              className="px-4 py-2 bg-[#2E2E2E] hover:bg-[#DA291C] rounded-lg transition-colors"
-            >
-              Home
-            </Link>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-[#DA291C]">Dashboard</h1>
+          <p className="text-gray-400 mt-2">Tổng quan hệ thống</p>
         </div>
 
         {/* User Info */}
         <div className="bg-[#1C1C1C] p-6 rounded-lg mb-8">
           <p className="text-gray-400">
-            Logged in as: <span className="text-white font-semibold">{session.user?.email}</span>
+            Logged in as:{" "}
+            <span className="text-white font-semibold">
+              {session.user?.email}
+            </span>
           </p>
         </div>
 
@@ -85,38 +79,57 @@ export default async function AdminDashboard() {
                 />
               </svg>
               <div>
-                <p className="text-yellow-500 font-semibold mb-1">⚠️ AWS S3 Not Configured</p>
+                <p className="text-yellow-500 font-semibold mb-1">
+                  ⚠️ AWS S3 Not Configured
+                </p>
                 <p className="text-yellow-200 text-sm mb-2">
-                  Upload functionality requires AWS S3 configuration. Please set up your AWS credentials.
+                  Upload functionality requires AWS S3 configuration. Please set
+                  up your AWS credentials.
                 </p>
                 <div className="text-yellow-200 text-sm space-y-1">
                   <p>Missing environment variables:</p>
                   <ul className="list-disc list-inside ml-2 space-y-1">
-                    {!process.env.AWS_ACCESS_KEY_ID && <li>AWS_ACCESS_KEY_ID</li>}
-                    {!process.env.AWS_SECRET_ACCESS_KEY && <li>AWS_SECRET_ACCESS_KEY</li>}
-                    {!process.env.AWS_S3_BUCKET_NAME && <li>AWS_S3_BUCKET_NAME</li>}
+                    {!process.env.AWS_ACCESS_KEY_ID && (
+                      <li>AWS_ACCESS_KEY_ID</li>
+                    )}
+                    {!process.env.AWS_SECRET_ACCESS_KEY && (
+                      <li>AWS_SECRET_ACCESS_KEY</li>
+                    )}
+                    {!process.env.AWS_S3_BUCKET_NAME && (
+                      <li>AWS_S3_BUCKET_NAME</li>
+                    )}
                   </ul>
                 </div>
                 <p className="text-yellow-200 text-sm mt-3">
-                  📖 Check <code className="bg-black/30 px-2 py-1 rounded">QUICK_START.md</code> for setup instructions.
+                  📖 Check{" "}
+                  <code className="bg-black/30 px-2 py-1 rounded">
+                    QUICK_START.md
+                  </code>{" "}
+                  for setup instructions.
                 </p>
               </div>
             </div>
           </div>
         )}
-        
+
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-[#1C1C1C] p-6 rounded-lg border-l-4 border-[#DA291C]">
-            <h3 className="text-3xl font-bold text-[#DA291C] mb-2">{totalMedia}</h3>
+            <h3 className="text-3xl font-bold text-[#DA291C] mb-2">
+              {totalMedia}
+            </h3>
             <p className="text-gray-400">Total Media</p>
           </div>
           <div className="bg-[#1C1C1C] p-6 rounded-lg border-l-4 border-[#FBE122]">
-            <h3 className="text-3xl font-bold text-[#FBE122] mb-2">{totalImages}</h3>
+            <h3 className="text-3xl font-bold text-[#FBE122] mb-2">
+              {totalImages}
+            </h3>
             <p className="text-gray-400">Images</p>
           </div>
           <div className="bg-[#1C1C1C] p-6 rounded-lg border-l-4 border-[#DA291C]">
-            <h3 className="text-3xl font-bold text-[#DA291C] mb-2">{totalVideos}</h3>
+            <h3 className="text-3xl font-bold text-[#DA291C] mb-2">
+              {totalVideos}
+            </h3>
             <p className="text-gray-400">Videos</p>
           </div>
         </div>
@@ -124,7 +137,7 @@ export default async function AdminDashboard() {
         {/* Quick Actions */}
         <div className="bg-[#1C1C1C] p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/admin/upload"
               className="bg-[#DA291C] hover:bg-[#FBE122] hover:text-black px-6 py-4 rounded-lg transition-colors flex items-center gap-3"
@@ -189,42 +202,13 @@ export default async function AdminDashboard() {
                 />
               </svg>
               <div className="text-left">
-                <p className="font-semibold">Home Page Settings</p>
+                <p className="font-semibold">Homepage Settings</p>
                 <p className="text-sm opacity-80">Customize landing page</p>
-              </div>
-            </Link>
-
-            <Link
-              href="/gallery"
-              className="bg-[#2E2E2E] hover:bg-[#DA291C] px-6 py-4 rounded-lg transition-colors flex items-center gap-3"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-              <div className="text-left">
-                <p className="font-semibold">View Gallery</p>
-                <p className="text-sm opacity-80">Public gallery view</p>
               </div>
             </Link>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
