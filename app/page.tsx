@@ -531,12 +531,14 @@ export default function LandingPage() {
               Chia sẻ khoảnh khắc Manchester United của bạn cùng hàng ngàn fan
               hâm mộ khác
             </p>
-            <Link
-              href="/gallery"
+            <a
+              href={settings.social.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block bg-[#FBE122] hover:bg-white text-black px-12 py-6 rounded-lg text-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-2xl"
             >
               Tham gia ngay →
-            </Link>
+            </a>
           </motion.div>
         </div>
       </section>
