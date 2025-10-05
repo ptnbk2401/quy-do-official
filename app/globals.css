@@ -53,6 +53,10 @@ body {
   column-count: 2;
   column-gap: 1rem;
   padding: 0;
+  /* GPU acceleration for smooth scrolling */
+  will-change: auto;
+  transform: translateZ(0);
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (min-width: 640px) {
@@ -72,8 +76,13 @@ body {
   margin-bottom: 1rem;
   display: inline-block;
   width: 100%;
-  /* Smooth transition when items are added */
-  transition: opacity 0.3s ease-in-out;
+  /* GPU acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Optimize rendering - only render when visible */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
 }
 
 .masonry-item > * {
@@ -118,4 +127,28 @@ body {
 
 .image-loaded {
   opacity: 1;
+}
+
+/* Reduce motion for better mobile performance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Optimize scrolling on mobile */
+@media (max-width: 768px) {
+  .masonry-item {
+    /* Disable transitions on mobile for better performance */
+    transition: none;
+  }
+  
+  /* Reduce shimmer animation on mobile */
+  .shimmer-wrapper {
+    animation-duration: 2s;
+  }
 }
