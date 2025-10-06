@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { signIn } from "next-auth/react"
-import Link from "next/link"
+import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/admin/dashboard" })
-  }
+    signIn("google", { callbackUrl: "/admin/dashboard" });
+  };
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
@@ -16,9 +16,7 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold text-[#DA291C] mb-2">
             Quỷ Đỏ Official
           </h1>
-          <p className="text-gray-400">
-            Đăng nhập để quản lý media
-          </p>
+          <p className="text-gray-400">Đăng nhập để quản lý media</p>
         </div>
 
         {/* Google Login Button */}
@@ -68,9 +66,7 @@ export default function LoginPage() {
             ← Quay về trang chủ
           </Link>
         </div>
-
-
       </div>
     </div>
-  )
+  );
 }
