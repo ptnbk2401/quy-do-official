@@ -74,7 +74,8 @@ export default function LandingPage() {
 
         // Refresh URLs if needed
         let finalSettings = originalSettings;
-        if (urlsToRefresh.length > 0) {
+        if (false && urlsToRefresh.length > 0) {
+          // Temporarily disabled
           try {
             const refreshResponse = await fetch("/api/homepage/refresh-urls", {
               method: "POST",

@@ -17,9 +17,14 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       // Check if user email is in admin whitelist
       const adminEmail = process.env.ADMIN_EMAIL;
+      console.log("Login attempt:", user.email, "vs admin:", adminEmail);
+
       if (user.email === adminEmail) {
+        console.log("Admin access granted");
         return true;
       }
+
+      console.log("Admin access denied");
       return false; // Deny access if not admin
     },
     async jwt({ token, user }) {
