@@ -12,17 +12,8 @@ export default function LoginPage() {
         headers: { "Cache-Control": "no-cache" },
       });
 
-      const result = await signIn("google", {
-        callbackUrl: "/admin/dashboard",
-        redirect: false,
-      });
-
-      if (result?.error) {
-        console.error("Login error:", result.error);
-        alert("Login failed: " + result.error);
-      } else if (result?.url) {
-        window.location.href = result.url;
-      }
+      // Use default redirect behavior to avoid JSON parsing
+      signIn("google", { callbackUrl: "/admin/dashboard" });
     } catch (error) {
       console.error("Login exception:", error);
       alert("Login failed: " + (error as Error).message);
