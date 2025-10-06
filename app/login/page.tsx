@@ -4,7 +4,13 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
+    // Force refresh CSRF token before login
+    await fetch("/api/auth/csrf", {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
+
     signIn("google", { callbackUrl: "/admin/dashboard" });
   };
 
