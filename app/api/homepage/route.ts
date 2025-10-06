@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { generatePresignedDownloadUrl, getPublicUrl } from "@/lib/s3";
+// Removed unused imports
 import {
   S3Client,
   GetObjectCommand,
@@ -108,9 +108,7 @@ async function saveSettings(settings: HomepageSettings) {
 
 export const revalidate = 3600; // Cache for 1 hour (refresh URLs more frequently)
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const forceRefresh = searchParams.get("refresh") === "true";
+export async function GET() {
   try {
     const settings = await getSettings();
 

@@ -1,74 +1,86 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { RESIZE_OPTIONS, resizeImage, getImageDimensions, formatFileSize } from "@/lib/image-utils"
+import { useState, useEffect } from "react";
+import {
+  RESIZE_OPTIONS,
+  resizeImage,
+  getImageDimensions,
+  formatFileSize,
+} from "@/lib/image-utils";
 
 interface ImageResizeProps {
-  file: File
-  onConfirm: (resizedFile: File) => void
-  onCancel: () => void
+  file: File;
+  onConfirm: (resizedFile: File) => void;
+  onCancel: () => void;
 }
 
 export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
-  const [selectedOption, setSelectedOption] = useState(RESIZE_OPTIONS[1]) // Default to Medium
-  const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null)
-  const [previewUrl] = useState(() => URL.createObjectURL(file))
-  const [resizedFile, setResizedFile] = useState<File | null>(null)
-  const [resizedUrl, setResizedUrl] = useState<string | null>(null)
-  const [processing, setProcessing] = useState(false)
+  const [selectedOption, setSelectedOption] = useState(RESIZE_OPTIONS[1]); // Default to Medium
+  const [originalDimensions, setOriginalDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+  const [previewUrl] = useState(() => URL.createObjectURL(file));
+  const [resizedFile, setResizedFile] = useState<File | null>(null);
+  const [resizedUrl, setResizedUrl] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     // Get original image dimensions
-    getImageDimensions(file).then(setOriginalDimensions)
-  }, [file])
+    getImageDimensions(file).then(setOriginalDimensions);
+  }, [file]);
 
-  const calculateNewDimensions = (option: typeof RESIZE_OPTIONS[0]) => {
+  const calculateNewDimensions = (option: (typeof RESIZE_OPTIONS)[0]) => {
     if (!originalDimensions || option.width === 0) {
-      return originalDimensions
+      return originalDimensions;
     }
 
-    const { width: originalWidth, height: originalHeight } = originalDimensions
-    const aspectRatio = originalHeight / originalWidth
-    
+    const { width: originalWidth, height: originalHeight } = originalDimensions;
+    const aspectRatio = originalHeight / originalWidth;
+
     if (originalWidth <= option.width) {
-      return { width: originalWidth, height: originalHeight }
+      return { width: originalWidth, height: originalHeight };
     }
 
     return {
       width: option.width,
-      height: Math.round(option.width * aspectRatio)
-    }
-  }
+      height: Math.round(option.width * aspectRatio),
+    };
+  };
 
   const handlePreview = async () => {
     if (selectedOption.width === 0) {
       // Original size
-      setResizedFile(file)
-      setResizedUrl(previewUrl)
-      return
+      setResizedFile(file);
+      setResizedUrl(previewUrl);
+      return;
     }
 
-    setProcessing(true)
+    setProcessing(true);
     try {
-      const resized = await resizeImage(file, selectedOption.width, selectedOption.quality)
-      setResizedFile(resized)
-      setResizedUrl(URL.createObjectURL(resized))
+      const resized = await resizeImage(
+        file,
+        selectedOption.width,
+        selectedOption.quality
+      );
+      setResizedFile(resized);
+      setResizedUrl(URL.createObjectURL(resized));
     } catch (error) {
-      console.error("Failed to resize image:", error)
+      console.error("Failed to resize image:", error);
     } finally {
-      setProcessing(false)
+      setProcessing(false);
     }
-  }
+  };
 
   const handleConfirm = () => {
     if (resizedFile) {
-      onConfirm(resizedFile)
+      onConfirm(resizedFile);
     } else {
-      onConfirm(file)
+      onConfirm(file);
     }
-  }
+  };
 
-  const newDimensions = calculateNewDimensions(selectedOption)
+  const newDimensions = calculateNewDimensions(selectedOption);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90">
@@ -81,7 +93,9 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
             <span>📊 {formatFileSize(file.size)}</span>
             <span>🖼️ {file.type}</span>
             {originalDimensions && (
-              <span>📐 {originalDimensions.width} × {originalDimensions.height}</span>
+              <span>
+                📐 {originalDimensions.width} × {originalDimensions.height}
+              </span>
             )}
           </div>
         </div>
@@ -91,12 +105,12 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
             {/* Resize Options */}
             <div>
               <h4 className="font-semibold text-white mb-4">Resize Options</h4>
-              
+
               <div className="space-y-3 mb-6">
                 {RESIZE_OPTIONS.map((option) => {
-                  const dimensions = calculateNewDimensions(option)
-                  const isOriginal = option.width === 0
-                  
+                  const dimensions = calculateNewDimensions(option);
+                  const isOriginal = option.width === 0;
+
                   return (
                     <label
                       key={option.name}
@@ -116,7 +130,9 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
                       />
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-white">{option.name}</span>
+                          <span className="font-semibold text-white">
+                            {option.name}
+                          </span>
                           <span className="text-[#DA291C] text-sm font-medium">
                             Quality: {Math.round(option.quality * 100)}%
                           </span>
@@ -137,7 +153,7 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
                         </div>
                       </div>
                     </label>
-                  )
+                  );
                 })}
               </div>
 
@@ -153,12 +169,13 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
             {/* Preview */}
             <div>
               <h4 className="font-semibold text-white mb-4">Preview</h4>
-              
+
               <div className="grid grid-cols-1 gap-4">
                 {/* Original */}
                 <div>
                   <p className="text-gray-400 text-sm mb-2">Original:</p>
                   <div className="bg-black rounded-lg p-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={previewUrl}
                       alt="Original"
@@ -169,7 +186,8 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
                     Size: {formatFileSize(file.size)}
                     {originalDimensions && (
                       <span className="ml-2">
-                        {originalDimensions.width} × {originalDimensions.height}px
+                        {originalDimensions.width} × {originalDimensions.height}
+                        px
                       </span>
                     )}
                   </div>
@@ -178,8 +196,11 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
                 {/* Resized */}
                 {resizedUrl && resizedFile && (
                   <div>
-                    <p className="text-gray-400 text-sm mb-2">Resized ({selectedOption.name}):</p>
+                    <p className="text-gray-400 text-sm mb-2">
+                      Resized ({selectedOption.name}):
+                    </p>
                     <div className="bg-black rounded-lg p-4">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={resizedUrl}
                         alt="Resized"
@@ -194,7 +215,8 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
                         </span>
                       )}
                       <span className="ml-2 text-green-400">
-                        ({Math.round((1 - resizedFile.size / file.size) * 100)}% smaller)
+                        ({Math.round((1 - resizedFile.size / file.size) * 100)}%
+                        smaller)
                       </span>
                     </div>
                   </div>
@@ -228,5 +250,5 @@ export function ImageResize({ file, onConfirm, onCancel }: ImageResizeProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

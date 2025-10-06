@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
+
 import { useState } from "react";
 
 interface MediaCardProps {
@@ -51,6 +51,7 @@ export function MediaCard({
             !imageLoaded ? "shimmer-wrapper" : ""
           }`}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={url}
             alt={fileName}

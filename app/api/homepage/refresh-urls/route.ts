@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         /https:\/\/([^.]+)\.s3\.([^.]+)\.amazonaws\.com\/([^?]+)/
       );
       if (match) {
-        const [, bucket, region, key] = match;
+        const [, , , key] = match;
         try {
           const freshUrl = await generatePresignedDownloadUrl(key);
           refreshedUrls[url] = freshUrl;

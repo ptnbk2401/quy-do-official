@@ -43,36 +43,37 @@ export default function LandingPage() {
     fetch("/api/homepage")
       .then((res) => res.json())
       .then(async (data) => {
-        let settings = data.settings;
+        const originalSettings = data.settings;
 
         // Check if URLs need refreshing (if they contain expired presigned URLs)
         const urlsToRefresh = [];
         if (
-          settings.hero.logo &&
-          settings.hero.logo.includes("X-Amz-Algorithm")
+          originalSettings.hero.logo &&
+          originalSettings.hero.logo.includes("X-Amz-Algorithm")
         ) {
-          urlsToRefresh.push(settings.hero.logo);
+          urlsToRefresh.push(originalSettings.hero.logo);
         }
         if (
-          settings.hero.backgroundImage &&
-          settings.hero.backgroundImage.includes("X-Amz-Algorithm")
+          originalSettings.hero.backgroundImage &&
+          originalSettings.hero.backgroundImage.includes("X-Amz-Algorithm")
         ) {
-          urlsToRefresh.push(settings.hero.backgroundImage);
+          urlsToRefresh.push(originalSettings.hero.backgroundImage);
         }
         if (
-          settings.hero.backgroundVideo &&
-          settings.hero.backgroundVideo.includes("X-Amz-Algorithm")
+          originalSettings.hero.backgroundVideo &&
+          originalSettings.hero.backgroundVideo.includes("X-Amz-Algorithm")
         ) {
-          urlsToRefresh.push(settings.hero.backgroundVideo);
+          urlsToRefresh.push(originalSettings.hero.backgroundVideo);
         }
         if (
-          settings.about.image &&
-          settings.about.image.includes("X-Amz-Algorithm")
+          originalSettings.about.image &&
+          originalSettings.about.image.includes("X-Amz-Algorithm")
         ) {
-          urlsToRefresh.push(settings.about.image);
+          urlsToRefresh.push(originalSettings.about.image);
         }
 
         // Refresh URLs if needed
+        let finalSettings = originalSettings;
         if (urlsToRefresh.length > 0) {
           try {
             const refreshResponse = await fetch("/api/homepage/refresh-urls", {
@@ -84,21 +85,28 @@ export default function LandingPage() {
             if (refreshResponse.ok) {
               const { refreshedUrls } = await refreshResponse.json();
 
-              // Update settings with fresh URLs
-              if (refreshedUrls[settings.hero.logo]) {
-                settings.hero.logo = refreshedUrls[settings.hero.logo];
-              }
-              if (refreshedUrls[settings.hero.backgroundImage]) {
-                settings.hero.backgroundImage =
-                  refreshedUrls[settings.hero.backgroundImage];
-              }
-              if (refreshedUrls[settings.hero.backgroundVideo]) {
-                settings.hero.backgroundVideo =
-                  refreshedUrls[settings.hero.backgroundVideo];
-              }
-              if (refreshedUrls[settings.about.image]) {
-                settings.about.image = refreshedUrls[settings.about.image];
-              }
+              // Create new settings object with fresh URLs
+              finalSettings = {
+                ...originalSettings,
+                hero: {
+                  ...originalSettings.hero,
+                  logo:
+                    refreshedUrls[originalSettings.hero.logo] ||
+                    originalSettings.hero.logo,
+                  backgroundImage:
+                    refreshedUrls[originalSettings.hero.backgroundImage] ||
+                    originalSettings.hero.backgroundImage,
+                  backgroundVideo:
+                    refreshedUrls[originalSettings.hero.backgroundVideo] ||
+                    originalSettings.hero.backgroundVideo,
+                },
+                about: {
+                  ...originalSettings.about,
+                  image:
+                    refreshedUrls[originalSettings.about.image] ||
+                    originalSettings.about.image,
+                },
+              };
 
               console.log("URLs refreshed successfully");
             }
@@ -107,7 +115,7 @@ export default function LandingPage() {
           }
         }
 
-        setSettings(settings);
+        setSettings(finalSettings);
 
         // Then fetch media with the limit from settings
         const limit = data.settings?.highlights?.limit || 6;
@@ -225,6 +233,7 @@ export default function LandingPage() {
           >
             <div className="w-32 h-32 mx-auto bg-gradient-to-br from-[#DA291C] to-[#FBE122] rounded-full flex items-center justify-center shadow-2xl shadow-[#DA291C]/50 overflow-hidden">
               {settings.hero.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={settings.hero.logo}
                   alt={`${settings.hero.title} Logo`}
@@ -370,6 +379,7 @@ export default function LandingPage() {
                     >
                       {/* Image */}
                       {isImage && item.url && (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={item.url}
                           alt={item.Key?.split("/").pop() || "Media"}

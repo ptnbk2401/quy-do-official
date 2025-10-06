@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 
 interface HeroMediaProps {
   backgroundVideo?: string;
@@ -64,6 +63,7 @@ export function HeroMedia({
       {/* Logo with error handling */}
       <div className="w-32 h-32 mx-auto bg-gradient-to-br from-[#DA291C] to-[#FBE122] rounded-full flex items-center justify-center shadow-2xl shadow-[#DA291C]/50 overflow-hidden">
         {logo && !logoError ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={logo}
             alt={`${title} Logo`}

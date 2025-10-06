@@ -233,6 +233,7 @@ export function HomepageEditor() {
               </div>
               {settings.hero.backgroundImage && (
                 <div className="w-32 h-32 relative rounded overflow-hidden bg-black">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={settings.hero.backgroundImage}
                     alt="Hero background"
@@ -270,6 +271,7 @@ export function HomepageEditor() {
               </div>
               {settings.hero.logo && (
                 <div className="w-32 h-32 relative rounded-full overflow-hidden bg-gradient-to-br from-[#DA291C] to-[#FBE122] p-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={settings.hero.logo}
                     alt="Logo"
@@ -385,6 +387,7 @@ export function HomepageEditor() {
               </div>
               {settings.about.image && (
                 <div className="w-32 h-32 relative rounded overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={settings.about.image}
                     alt="About image"

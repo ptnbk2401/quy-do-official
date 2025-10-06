@@ -11,7 +11,9 @@
     "setup-s3-public": "node scripts/setup-s3-public.js",
     "test-urls": "node scripts/test-urls.js",
     "test-s3-access": "node scripts/test-s3-access.js",
-    "test-homepage-refresh": "node scripts/test-homepage-refresh.js"
+    "test-homepage-refresh": "node scripts/test-homepage-refresh.js",
+    "check-code": "bash scripts/check-code.sh",
+    "setup-hooks": "bash scripts/setup-git-hooks.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.901.0",
