@@ -5,13 +5,28 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const handleGoogleLogin = async () => {
-    // Force refresh CSRF token before login
-    await fetch("/api/auth/csrf", {
-      cache: "no-store",
-      headers: { "Cache-Control": "no-cache" },
-    });
+    try {
+      // Force refresh CSRF token before login
+      await fetch("/api/auth/csrf", {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
 
-    signIn("google", { callbackUrl: "/admin/dashboard" });
+      const result = await signIn("google", {
+        callbackUrl: "/admin/dashboard",
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error("Login error:", result.error);
+        alert("Login failed: " + result.error);
+      } else if (result?.url) {
+        window.location.href = result.url;
+      }
+    } catch (error) {
+      console.error("Login exception:", error);
+      alert("Login failed: " + (error as Error).message);
+    }
   };
 
   return (
