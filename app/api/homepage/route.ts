@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { generatePresignedDownloadUrl } from "@/lib/s3";
+import { generatePresignedDownloadUrl, getPublicUrl } from "@/lib/s3";
 import {
   S3Client,
   GetObjectCommand,
@@ -106,64 +106,16 @@ async function saveSettings(settings: HomepageSettings) {
   await s3Client.send(command);
 }
 
-export const revalidate = 3600; // Cache for 1 hour
+export const revalidate = 3600; // Cache for 1 hour (refresh URLs more frequently)
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const forceRefresh = searchParams.get("refresh") === "true";
   try {
     const settings = await getSettings();
 
-    // Generate presigned URLs for S3 keys
-    const settingsWithUrls = { ...settings };
-
-    // Hero background image
-    if (
-      settings.hero.backgroundImage &&
-      settings.hero.backgroundImage.startsWith("homepage/")
-    ) {
-      try {
-        settingsWithUrls.hero.backgroundImage =
-          await generatePresignedDownloadUrl(settings.hero.backgroundImage);
-      } catch (error) {
-        console.error("Failed to generate URL for hero background:", error);
-      }
-    }
-
-    // Hero background video
-    if (
-      settings.hero.backgroundVideo &&
-      settings.hero.backgroundVideo.startsWith("homepage/")
-    ) {
-      try {
-        settingsWithUrls.hero.backgroundVideo =
-          await generatePresignedDownloadUrl(settings.hero.backgroundVideo);
-      } catch (error) {
-        console.error("Failed to generate URL for hero video:", error);
-      }
-    }
-
-    // Hero logo
-    if (settings.hero.logo && settings.hero.logo.startsWith("homepage/")) {
-      try {
-        settingsWithUrls.hero.logo = await generatePresignedDownloadUrl(
-          settings.hero.logo
-        );
-      } catch (error) {
-        console.error("Failed to generate URL for logo:", error);
-      }
-    }
-
-    // About image
-    if (settings.about.image && settings.about.image.startsWith("homepage/")) {
-      try {
-        settingsWithUrls.about.image = await generatePresignedDownloadUrl(
-          settings.about.image
-        );
-      } catch (error) {
-        console.error("Failed to generate URL for about image:", error);
-      }
-    }
-
-    return NextResponse.json({ settings: settingsWithUrls });
+    // Return settings as-is, client will handle URL refresh if needed
+    return NextResponse.json({ settings });
   } catch (error) {
     console.error("Failed to get homepage settings:", error);
     return NextResponse.json({ settings: DEFAULT_SETTINGS });

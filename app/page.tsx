@@ -42,8 +42,72 @@ export default function LandingPage() {
     // Fetch homepage settings first
     fetch("/api/homepage")
       .then((res) => res.json())
-      .then((data) => {
-        setSettings(data.settings);
+      .then(async (data) => {
+        let settings = data.settings;
+
+        // Check if URLs need refreshing (if they contain expired presigned URLs)
+        const urlsToRefresh = [];
+        if (
+          settings.hero.logo &&
+          settings.hero.logo.includes("X-Amz-Algorithm")
+        ) {
+          urlsToRefresh.push(settings.hero.logo);
+        }
+        if (
+          settings.hero.backgroundImage &&
+          settings.hero.backgroundImage.includes("X-Amz-Algorithm")
+        ) {
+          urlsToRefresh.push(settings.hero.backgroundImage);
+        }
+        if (
+          settings.hero.backgroundVideo &&
+          settings.hero.backgroundVideo.includes("X-Amz-Algorithm")
+        ) {
+          urlsToRefresh.push(settings.hero.backgroundVideo);
+        }
+        if (
+          settings.about.image &&
+          settings.about.image.includes("X-Amz-Algorithm")
+        ) {
+          urlsToRefresh.push(settings.about.image);
+        }
+
+        // Refresh URLs if needed
+        if (urlsToRefresh.length > 0) {
+          try {
+            const refreshResponse = await fetch("/api/homepage/refresh-urls", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ urls: urlsToRefresh }),
+            });
+
+            if (refreshResponse.ok) {
+              const { refreshedUrls } = await refreshResponse.json();
+
+              // Update settings with fresh URLs
+              if (refreshedUrls[settings.hero.logo]) {
+                settings.hero.logo = refreshedUrls[settings.hero.logo];
+              }
+              if (refreshedUrls[settings.hero.backgroundImage]) {
+                settings.hero.backgroundImage =
+                  refreshedUrls[settings.hero.backgroundImage];
+              }
+              if (refreshedUrls[settings.hero.backgroundVideo]) {
+                settings.hero.backgroundVideo =
+                  refreshedUrls[settings.hero.backgroundVideo];
+              }
+              if (refreshedUrls[settings.about.image]) {
+                settings.about.image = refreshedUrls[settings.about.image];
+              }
+
+              console.log("URLs refreshed successfully");
+            }
+          } catch (error) {
+            console.error("Failed to refresh URLs:", error);
+          }
+        }
+
+        setSettings(settings);
 
         // Then fetch media with the limit from settings
         const limit = data.settings?.highlights?.limit || 6;
@@ -103,6 +167,14 @@ export default function LandingPage() {
               playsInline
               preload="auto"
               className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => {
+                console.error(
+                  "Video failed to load:",
+                  settings.hero.backgroundVideo
+                );
+                // Fallback to background image or gradient
+                e.currentTarget.style.display = "none";
+              }}
             >
               <source src={settings.hero.backgroundVideo} type="video/mp4" />
             </video>
@@ -118,7 +190,7 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-black/60"></div>
           </div>
         ) : (
-          <div className="absolute inset-0 bg-black">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#DA291C] via-black to-[#FBE122]">
             <div className="absolute inset-0 bg-black/60"></div>
           </div>
         )}
@@ -155,12 +227,22 @@ export default function LandingPage() {
               {settings.hero.logo ? (
                 <img
                   src={settings.hero.logo}
-                  alt="Logo"
+                  alt={`${settings.hero.title} Logo`}
                   className="w-full h-full object-contain p-2"
+                  onError={(e) => {
+                    console.error("Logo failed to load:", settings.hero.logo);
+                    e.currentTarget.style.display = "none";
+                    e.currentTarget.nextElementSibling?.classList.remove(
+                      "hidden"
+                    );
+                  }}
                 />
-              ) : (
-                <span className="text-6xl">⚽</span>
-              )}
+              ) : null}
+              <span
+                className={`text-6xl ${settings.hero.logo ? "hidden" : ""}`}
+              >
+                ⚽
+              </span>
             </div>
           </motion.div>
 

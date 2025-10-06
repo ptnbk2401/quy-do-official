@@ -19,6 +19,20 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "200mb",
     },
   },
+  // Cache headers for better performance
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
   // Tắm ESLint trong production build (uncomment nếu cần)
   // eslint: {
   //   ignoreDuringBuilds: true,
