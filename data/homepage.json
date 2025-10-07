@@ -1,15 +1,15 @@
 {
   "hero": {
-    "backgroundImage": "https://quydo-official-media.s3.ap-southeast-1.amazonaws.com/homepage/hero-1759570161427.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAW3MD6QUCBGZXFDNV%2F20251005%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251005T093225Z&X-Amz-Expires=86400&X-Amz-Signature=8e5fcff2dec278d8399376041d3693ece5d564518cd7cd50b9abaf1fcbf2882f&X-Amz-SignedHeaders=host&response-cache-control=public%2C%20max-age%3D86400%2C%20immutable&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-    "backgroundVideo": "https://quydo-official-media.s3.ap-southeast-1.amazonaws.com/homepage/hero-1759569684803.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAW3MD6QUCBGZXFDNV%2F20251005%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251005T093225Z&X-Amz-Expires=86400&X-Amz-Signature=02227eaf3daac8bb1a14660732d1bd7adb02d3fb2c609e3bc41e2d767ec7059f&X-Amz-SignedHeaders=host&response-cache-control=public%2C%20max-age%3D86400%2C%20immutable&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-    "logo": "https://quydo-official-media.s3.ap-southeast-1.amazonaws.com/homepage/logo-1759568328537.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAW3MD6QUCBGZXFDNV%2F20251005%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251005T093225Z&X-Amz-Expires=86400&X-Amz-Signature=e02cb77cc898886fad98f4a94e67f5f1186ff5040017a0cd870b75365955cb5b&X-Amz-SignedHeaders=host&response-cache-control=public%2C%20max-age%3D86400%2C%20immutable&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+    "backgroundImage": "homepage/hero-1759570161427.jpg",
+    "backgroundVideo": "homepage/hero-1759569684803.mp4",
+    "logo": "homepage/logo-1759568328537.png",
     "title": "Quỷ Đỏ Official",
     "subtitle": "Trái tim Quỷ Đỏ - Nơi lưu giữ khoảnh khắc đáng nhớ của Manchester United",
     "ctaText": "Khám phá Media",
     "ctaLink": "/gallery"
   },
   "about": {
-    "image": "https://quydo-official-media.s3.ap-southeast-1.amazonaws.com/homepage/about-1759657932362.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAW3MD6QUCBGZXFDNV%2F20251005%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251005T123612Z&X-Amz-Expires=86400&X-Amz-Signature=d314898262f8a9166d5ca9725bbda559765f9c5f63739294ec8dccccca5654a7&X-Amz-SignedHeaders=host&response-cache-control=public%2C%20max-age%3D86400%2C%20immutable&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+    "image": "homepage/about-1759657932362.jpg",
     "title": "Câu chuyện của chúng tôi",
     "description": "Quỷ Đỏ Official ra đời từ tình yêu và niềm tự hào dành cho Manchester United.\nChúng tôi mong muốn tạo nên một không gian để người hâm mộ Việt Nam cùng nhau chia sẻ, lưu giữ và lan tỏa những khoảnh khắc đáng nhớ nhất của đội bóng huyền thoại này."
   },

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-// Removed unused imports
+import { generatePresignedDownloadUrl } from "@/lib/s3";
+import { extractS3Key } from "@/lib/url-utils";
 import {
   S3Client,
   GetObjectCommand,
@@ -106,18 +107,63 @@ async function saveSettings(settings: HomepageSettings) {
   await s3Client.send(command);
 }
 
-export const revalidate = 3600; // Cache for 1 hour (refresh URLs more frequently)
+export const revalidate = 3600; // Cache for 1 hour
 
 export async function GET() {
   try {
     const settings = await getSettings();
 
-    // Return settings as-is, client will handle URL refresh if needed
-    return NextResponse.json({ settings });
+    // Convert S3 keys to presigned URLs for display
+    const settingsWithUrls = await convertKeysToUrls(settings);
+
+    return NextResponse.json({ settings: settingsWithUrls });
   } catch (error) {
     console.error("Failed to get homepage settings:", error);
     return NextResponse.json({ settings: DEFAULT_SETTINGS });
   }
+}
+
+async function convertKeysToUrls(
+  settings: HomepageSettings
+): Promise<HomepageSettings> {
+  const convertedSettings = { ...settings };
+
+  try {
+    // Convert hero images/videos if they are S3 keys (not full URLs)
+    if (
+      settings.hero.backgroundImage &&
+      !settings.hero.backgroundImage.startsWith("http")
+    ) {
+      convertedSettings.hero.backgroundImage =
+        await generatePresignedDownloadUrl(settings.hero.backgroundImage);
+    }
+
+    if (
+      settings.hero.backgroundVideo &&
+      !settings.hero.backgroundVideo.startsWith("http")
+    ) {
+      convertedSettings.hero.backgroundVideo =
+        await generatePresignedDownloadUrl(settings.hero.backgroundVideo);
+    }
+
+    if (settings.hero.logo && !settings.hero.logo.startsWith("http")) {
+      convertedSettings.hero.logo = await generatePresignedDownloadUrl(
+        settings.hero.logo
+      );
+    }
+
+    if (settings.about.image && !settings.about.image.startsWith("http")) {
+      convertedSettings.about.image = await generatePresignedDownloadUrl(
+        settings.about.image
+      );
+    }
+  } catch (error) {
+    console.error("Failed to generate presigned URLs:", error);
+    // Return original settings if URL generation fails
+    return settings;
+  }
+
+  return convertedSettings;
 }
 
 export async function POST(request: Request) {
@@ -129,8 +175,12 @@ export async function POST(request: Request) {
 
   try {
     const settings = await request.json();
-    await saveSettings(settings);
-    return NextResponse.json({ success: true, settings });
+
+    // Convert any presigned URLs back to S3 keys before saving
+    const settingsWithKeys = convertUrlsToKeys(settings);
+
+    await saveSettings(settingsWithKeys);
+    return NextResponse.json({ success: true, settings: settingsWithKeys });
   } catch (error) {
     console.error("Failed to save homepage settings:", error);
     return NextResponse.json(
@@ -138,4 +188,20 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+function convertUrlsToKeys(settings: HomepageSettings): HomepageSettings {
+  return {
+    ...settings,
+    hero: {
+      ...settings.hero,
+      backgroundImage: extractS3Key(settings.hero.backgroundImage),
+      backgroundVideo: extractS3Key(settings.hero.backgroundVideo),
+      logo: extractS3Key(settings.hero.logo),
+    },
+    about: {
+      ...settings.about,
+      image: extractS3Key(settings.about.image),
+    },
+  };
 }

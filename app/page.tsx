@@ -39,84 +39,11 @@ export default function LandingPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch homepage settings first
+    // Fetch homepage settings (API will automatically convert S3 keys to presigned URLs)
     fetch("/api/homepage")
       .then((res) => res.json())
-      .then(async (data) => {
-        const originalSettings = data.settings;
-
-        // Check if URLs need refreshing (if they contain expired presigned URLs)
-        const urlsToRefresh = [];
-        if (
-          originalSettings.hero.logo &&
-          originalSettings.hero.logo.includes("X-Amz-Algorithm")
-        ) {
-          urlsToRefresh.push(originalSettings.hero.logo);
-        }
-        if (
-          originalSettings.hero.backgroundImage &&
-          originalSettings.hero.backgroundImage.includes("X-Amz-Algorithm")
-        ) {
-          urlsToRefresh.push(originalSettings.hero.backgroundImage);
-        }
-        if (
-          originalSettings.hero.backgroundVideo &&
-          originalSettings.hero.backgroundVideo.includes("X-Amz-Algorithm")
-        ) {
-          urlsToRefresh.push(originalSettings.hero.backgroundVideo);
-        }
-        if (
-          originalSettings.about.image &&
-          originalSettings.about.image.includes("X-Amz-Algorithm")
-        ) {
-          urlsToRefresh.push(originalSettings.about.image);
-        }
-
-        // Refresh URLs if needed
-        let finalSettings = originalSettings;
-        if (false && urlsToRefresh.length > 0) {
-          // Temporarily disabled
-          try {
-            const refreshResponse = await fetch("/api/homepage/refresh-urls", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ urls: urlsToRefresh }),
-            });
-
-            if (refreshResponse.ok) {
-              const { refreshedUrls } = await refreshResponse.json();
-
-              // Create new settings object with fresh URLs
-              finalSettings = {
-                ...originalSettings,
-                hero: {
-                  ...originalSettings.hero,
-                  logo:
-                    refreshedUrls[originalSettings.hero.logo] ||
-                    originalSettings.hero.logo,
-                  backgroundImage:
-                    refreshedUrls[originalSettings.hero.backgroundImage] ||
-                    originalSettings.hero.backgroundImage,
-                  backgroundVideo:
-                    refreshedUrls[originalSettings.hero.backgroundVideo] ||
-                    originalSettings.hero.backgroundVideo,
-                },
-                about: {
-                  ...originalSettings.about,
-                  image:
-                    refreshedUrls[originalSettings.about.image] ||
-                    originalSettings.about.image,
-                },
-              };
-
-              console.log("URLs refreshed successfully");
-            }
-          } catch (error) {
-            console.error("Failed to refresh URLs:", error);
-          }
-        }
-
-        setSettings(finalSettings);
+      .then((data) => {
+        setSettings(data.settings);
 
         // Then fetch media with the limit from settings
         const limit = data.settings?.highlights?.limit || 6;

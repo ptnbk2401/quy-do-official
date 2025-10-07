@@ -99,7 +99,7 @@ export function HomepageEditor() {
 
       const data = await response.json();
 
-      // Update settings with new image/video URL
+      // Update settings with S3 key (data.url contains the S3 key, not presigned URL)
       if (settings) {
         if (section === "hero") {
           setSettings({
