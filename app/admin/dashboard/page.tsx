@@ -137,7 +137,7 @@ export default async function AdminDashboard() {
         {/* Quick Actions */}
         <div className="bg-[#1C1C1C] p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link
               href="/admin/upload"
               className="bg-[#DA291C] hover:bg-[#FBE122] hover:text-black px-6 py-4 rounded-lg transition-colors flex items-center gap-3"
@@ -204,6 +204,30 @@ export default async function AdminDashboard() {
               <div className="text-left">
                 <p className="font-semibold">Homepage Settings</p>
                 <p className="text-sm opacity-80">Customize landing page</p>
+              </div>
+            </Link>
+            <Link
+              href="/admin/dashboard/analytics"
+              className="bg-[#2E2E2E] hover:bg-[#DA291C] px-6 py-4 rounded-lg transition-colors flex items-center gap-3"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+              <div className="text-left">
+                <p className="font-semibold">Google Analytics</p>
+                <p className="text-sm opacity-80">
+                  Website performance insights
+                </p>
               </div>
             </Link>
           </div>

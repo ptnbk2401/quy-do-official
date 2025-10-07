@@ -64,3 +64,6 @@ temp/
 # Local data (if you have test uploads)
 /uploads/
 /media/
+
+# kiro spec
+.kiro/
