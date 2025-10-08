@@ -4,8 +4,14 @@ import { getAllNews } from "@/lib/news";
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://quydo.vn";
 
-  // Get all news articles
-  const news = getAllNews();
+  // Get all news articles with error handling
+  let news: Array<{ slug: string; metadata: { date: string } }> = [];
+  try {
+    news = getAllNews();
+  } catch (error) {
+    console.warn("Failed to load news for sitemap:", error);
+    // Continue with empty news array
+  }
 
   // Static pages
   const staticPages = [
@@ -36,12 +42,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // News article pages
-  const newsPages = news.map((post) => ({
-    url: `${baseUrl}/news/${post.slug}`,
-    lastModified: new Date(post.metadata.date),
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
+  const newsPages = news
+    .filter((post) => post.slug && post.metadata?.date)
+    .map((post) => {
+      const lastModified = new Date(post.metadata.date);
+      // Fallback to current date if invalid
+      const validDate = isNaN(lastModified.getTime())
+        ? new Date()
+        : lastModified;
+
+      return {
+        url: `${baseUrl}/news/${post.slug}`,
+        lastModified: validDate,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      };
+    });
 
   return [...staticPages, ...newsPages];
 }
