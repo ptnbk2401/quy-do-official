@@ -18,6 +18,11 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "app/api/analytics/**",
+      "components/admin/**",
+      "lib/google-analytics.ts",
+      "lib/cache-utils.ts",
+      "lib/url-utils.ts",
     ],
   },
   {

@@ -72,7 +72,6 @@ export async function GET(request: NextRequest) {
 
     // Check if dates are in the future
     const today = new Date();
-    const startDateObj = new Date(startDate);
     const endDateObj = new Date(endDate);
 
     if (endDateObj >= today) {

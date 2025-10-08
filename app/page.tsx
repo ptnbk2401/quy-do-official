@@ -6,6 +6,23 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { SocialIcons } from "@/components/social-icons";
 
+interface MediaItem {
+  Key?: string;
+  url?: string;
+}
+
+interface NewsItem {
+  slug: string;
+  metadata: {
+    title: string;
+    date: string;
+    author?: string;
+    description: string;
+    thumbnail?: string;
+    tags?: string[];
+  };
+}
+
 interface HomepageSettings {
   hero: {
     backgroundImage: string;
@@ -34,7 +51,8 @@ interface HomepageSettings {
 }
 
 export default function LandingPage() {
-  const [latestMedia, setLatestMedia] = useState<any[]>([]);
+  const [latestMedia, setLatestMedia] = useState<MediaItem[]>([]);
+  const [latestNews, setLatestNews] = useState<NewsItem[]>([]);
   const [settings, setSettings] = useState<HomepageSettings | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +72,7 @@ export default function LandingPage() {
             const files = mediaData.files || [];
             // Filter out homepage settings images
             const highlightMedia = files.filter(
-              (file: any) => !file.Key?.startsWith("homepage/")
+              (file: MediaItem) => !file.Key?.startsWith("homepage/")
             );
             // Shuffle array randomly
             const shuffled = highlightMedia.sort(() => Math.random() - 0.5);
@@ -65,6 +83,14 @@ export default function LandingPage() {
       })
       .catch((err) => console.error("Failed to fetch homepage settings:", err))
       .finally(() => setLoading(false));
+
+    // Fetch latest news
+    fetch("/api/news")
+      .then((res) => res.json())
+      .then((data) => {
+        setLatestNews(data.news.slice(0, 3));
+      })
+      .catch((err) => console.error("Failed to fetch news:", err));
   }, []);
 
   if (loading || !settings) {
@@ -237,6 +263,7 @@ export default function LandingPage() {
                 </svg>
               </span>
             </Link>
+
             <a
               href={settings.social.tiktok}
               target="_blank"
@@ -271,6 +298,130 @@ export default function LandingPage() {
             />
           </svg>
         </motion.div>
+      </section>
+
+      {/* Latest News Section */}
+      <section className="py-20 bg-[#0F0F0F]">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              📰 <span className="text-[#DA291C]">Tin mới</span>
+            </h2>
+            <p className="text-gray-400 text-lg">
+              Cập nhật tin tức mới nhất từ CLB
+            </p>
+          </motion.div>
+
+          {latestNews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {latestNews.map((post, index) => (
+                <motion.article
+                  key={post.slug}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group bg-[#1C1C1C] rounded-xl overflow-hidden hover:bg-[#2E2E2E] transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#DA291C]/20"
+                >
+                  {post.metadata.thumbnail && (
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={post.metadata.thumbnail}
+                        alt={post.metadata.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                  )}
+
+                  <div className="p-6">
+                    <div className="flex items-center text-[#DA291C] text-sm mb-3">
+                      <span>
+                        {new Date(post.metadata.date).toLocaleDateString(
+                          "vi-VN"
+                        )}
+                      </span>
+                      {post.metadata.author && (
+                        <>
+                          <span className="mx-2">•</span>
+                          <span>{post.metadata.author}</span>
+                        </>
+                      )}
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-[#DA291C] transition-colors">
+                      <Link href={`/news/${post.slug}`}>
+                        {post.metadata.title}
+                      </Link>
+                    </h3>
+
+                    <p className="text-gray-400 line-clamp-3 mb-4 leading-relaxed">
+                      {post.metadata.description}
+                    </p>
+
+                    {post.metadata.tags && post.metadata.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {post.metadata.tags.slice(0, 2).map((tag: string) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-1 bg-[#DA291C]/20 text-[#DA291C] text-xs rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <Link
+                      href={`/news/${post.slug}`}
+                      className="inline-flex items-center text-[#DA291C] hover:text-[#FBE122] font-semibold transition-colors group"
+                    >
+                      Đọc thêm
+                      <svg
+                        className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </Link>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📰</div>
+              <p className="text-gray-400 text-lg">Chưa có tin tức nào</p>
+            </div>
+          )}
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <Link
+              href="/news"
+              className="inline-block bg-[#DA291C] hover:bg-[#FBE122] text-white hover:text-black px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105"
+            >
+              Xem tất cả tin tức →
+            </Link>
+          </motion.div>
+        </div>
       </section>
 
       {/* Latest Highlights */}
@@ -384,13 +535,19 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mt-12"
+            className="text-center mt-12 flex gap-4 justify-center flex-wrap"
           >
             <Link
               href="/gallery"
               className="inline-block bg-[#2E2E2E] hover:bg-[#DA291C] text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300"
             >
               Xem tất cả khoảnh khắc →
+            </Link>
+            <Link
+              href="/news"
+              className="inline-block bg-[#1C1C1C] hover:bg-[#FBE122] text-white hover:text-black px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300"
+            >
+              📰 Tin tức CLB
             </Link>
           </motion.div>
         </div>
@@ -608,6 +765,14 @@ export default function LandingPage() {
                     className="text-gray-400 hover:text-[#DA291C] transition-colors"
                   >
                     TikTok/YouTube
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/news"
+                    className="text-gray-400 hover:text-[#DA291C] transition-colors"
+                  >
+                    Tin tức
                   </Link>
                 </li>
               </ul>

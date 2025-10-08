@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   const today = getToday();
   const yesterday = getYesterday();
 
-  const dateRange = getAnalyticsDateRange(range as any);
+  const dateRange = getAnalyticsDateRange(range as "7d" | "30d" | "90d");
 
   return NextResponse.json({
     debug: {

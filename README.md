@@ -11,6 +11,7 @@
 - ✅ **Advanced Filters** - Filter by type & category
 - ✅ **Admin Dashboard** - Full media management
 - ✅ **Google OAuth** - Secure authentication
+- ✅ **News System** - Markdown-based news articles with SEO optimization
 
 ## 🚀 Quick Start
 
@@ -37,6 +38,8 @@ Open: http://localhost:3000
 | `/admin/dashboard` | Admin dashboard             |
 | `/admin/upload`    | Upload with categories      |
 | `/admin/media`     | Media manager (bulk ops)    |
+| `/news`            | News articles list          |
+| `/news/[slug]`     | Individual news article     |
 
 ## 🔧 Configuration
 
@@ -62,6 +65,58 @@ NEXT_PUBLIC_AWS_S3_BUCKET_NAME=quydo-official-media
 ```
 
 See [QUICK_START.md](./QUICK_START.md) for detailed setup.
+
+## 📰 News System
+
+The news system uses markdown files for content management, providing a simple yet powerful way to publish articles.
+
+### Content Structure
+
+```
+content/news/
+├── 2025-10-08-clb-chien-thang-dam.md
+├── 2025-10-10-lich-thi-dau-moi.md
+└── 2025-10-12-tuyen-thu-moi.md
+```
+
+### Markdown Format
+
+```markdown
+---
+title: "Article Title"
+date: "2025-10-08"
+author: "Author Name"
+description: "Brief description for SEO"
+thumbnail: "/images/news/thumbnail.jpg"
+tags: ["tag1", "tag2", "tag3"]
+---
+
+Article content in Markdown format...
+
+## Headings
+
+- Lists
+- **Bold text**
+- _Italic text_
+
+![Image](path/to/image.jpg)
+```
+
+### Publishing Workflow
+
+1. **Create** markdown file in `content/news/`
+2. **Add** front-matter metadata (title, date, author, etc.)
+3. **Write** content in Markdown format
+4. **Commit & Push** to Git repository
+5. **Auto-deploy** via CI/CD (Vercel/Netlify)
+
+### Features
+
+- ✅ **SEO Optimized** - Meta tags, Open Graph, Twitter Cards
+- ✅ **Responsive Design** - Mobile-friendly layout
+- ✅ **Related Articles** - Automatic related content suggestions
+- ✅ **Fast Loading** - Static generation at build time
+- ✅ **No Database** - File-based content management
 
 ## 📁 S3 Structure
 
@@ -97,6 +152,7 @@ quydo-official-media/
 - Gallery with Filters
 - Admin Media Manager
 - Bulk Operations (Download ZIP, Delete)
+- News System (Markdown-based)
 - UI/UX with ManUtd Theme
 
 ### ⏳ Pending (47%)
