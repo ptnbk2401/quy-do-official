@@ -99,27 +99,27 @@ export function HomepageEditor() {
 
       const data = await response.json();
 
-      // Update settings with S3 key (data.url contains the S3 key, not presigned URL)
+      // Update settings with S3 key for storage (data.s3Key) but display public URL (data.url)
       if (settings) {
         if (section === "hero") {
           setSettings({
             ...settings,
-            hero: { ...settings.hero, backgroundImage: data.url },
+            hero: { ...settings.hero, backgroundImage: data.s3Key || data.url },
           });
         } else if (section === "hero-video") {
           setSettings({
             ...settings,
-            hero: { ...settings.hero, backgroundVideo: data.url },
+            hero: { ...settings.hero, backgroundVideo: data.s3Key || data.url },
           });
         } else if (section === "logo") {
           setSettings({
             ...settings,
-            hero: { ...settings.hero, logo: data.url },
+            hero: { ...settings.hero, logo: data.s3Key || data.url },
           });
         } else {
           setSettings({
             ...settings,
-            about: { ...settings.about, image: data.url },
+            about: { ...settings.about, image: data.s3Key || data.url },
           });
         }
       }

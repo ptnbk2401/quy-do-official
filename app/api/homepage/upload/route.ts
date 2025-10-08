@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { uploadToS3 } from "@/lib/s3";
+import { uploadHomepageMedia } from "@/lib/s3";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -59,15 +59,15 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload to S3
-    await uploadToS3(buffer, s3Key, file.type);
+    // Upload to S3 with public access for homepage media
+    const publicUrl = await uploadHomepageMedia(buffer, s3Key, file.type);
 
-    // Return S3 key instead of presigned URL
-    // Frontend will get presigned URL from /api/homepage
+    // Return public URL directly for immediate use
     return NextResponse.json({
       success: true,
-      url: s3Key, // Return S3 key, not presigned URL
+      url: publicUrl, // Return public URL, not S3 key
       filename: s3Key,
+      s3Key: s3Key, // Also return S3 key for settings storage
     });
   } catch (error) {
     console.error("Failed to upload image:", error);

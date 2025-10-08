@@ -79,3 +79,33 @@ export async function uploadToS3(
   await s3Client.send(command);
   return getPublicUrl(fileName);
 }
+
+export async function uploadToS3WithPublicAccess(
+  buffer: Buffer,
+  fileName: string,
+  contentType: string
+) {
+  const command = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: fileName,
+    Body: buffer,
+    ContentType: contentType,
+    ACL: "public-read", // Make file publicly accessible
+  });
+
+  await s3Client.send(command);
+  return getPublicUrl(fileName);
+}
+
+export async function uploadHomepageMedia(
+  buffer: Buffer,
+  fileName: string,
+  contentType: string
+) {
+  // Check if this is a homepage media file
+  if (fileName.startsWith("homepage/")) {
+    return uploadToS3WithPublicAccess(buffer, fileName, contentType);
+  } else {
+    return uploadToS3(buffer, fileName, contentType);
+  }
+}

@@ -39,7 +39,7 @@ export default function LandingPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch homepage settings (API will automatically convert S3 keys to presigned URLs)
+    // Fetch homepage settings (API will automatically convert S3 keys to public URLs)
     fetch("/api/homepage")
       .then((res) => res.json())
       .then((data) => {

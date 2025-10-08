@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { generatePresignedDownloadUrl } from "@/lib/s3";
-import { extractS3Key } from "@/lib/url-utils";
+import { getPublicUrl } from "@/lib/s3";
+import { extractS3Key, migrateHomepageUrlsToKeys } from "@/lib/url-utils";
 import {
   S3Client,
   GetObjectCommand,
@@ -87,7 +87,22 @@ async function getSettings(): Promise<HomepageSettings> {
     const data = await response.Body?.transformToString();
 
     if (data) {
-      return JSON.parse(data);
+      const settings = JSON.parse(data);
+
+      // Migrate any presigned URLs to S3 keys
+      const migratedSettings = migrateHomepageUrlsToKeys(
+        settings,
+        BUCKET_NAME,
+        process.env.AWS_REGION!
+      );
+
+      // Save migrated settings if there were changes
+      if (JSON.stringify(settings) !== JSON.stringify(migratedSettings)) {
+        console.log("Migrating homepage settings from URLs to S3 keys");
+        await saveSettings(migratedSettings);
+      }
+
+      return migratedSettings;
     }
     return DEFAULT_SETTINGS;
   } catch (error) {
@@ -113,8 +128,8 @@ export async function GET() {
   try {
     const settings = await getSettings();
 
-    // Convert S3 keys to presigned URLs for display
-    const settingsWithUrls = await convertKeysToUrls(settings);
+    // Convert S3 keys to public URLs for display
+    const settingsWithUrls = convertKeysToUrls(settings);
 
     return NextResponse.json({ settings: settingsWithUrls });
   } catch (error) {
@@ -123,9 +138,7 @@ export async function GET() {
   }
 }
 
-async function convertKeysToUrls(
-  settings: HomepageSettings
-): Promise<HomepageSettings> {
+function convertKeysToUrls(settings: HomepageSettings): HomepageSettings {
   const convertedSettings = { ...settings };
 
   try {
@@ -134,31 +147,29 @@ async function convertKeysToUrls(
       settings.hero.backgroundImage &&
       !settings.hero.backgroundImage.startsWith("http")
     ) {
-      convertedSettings.hero.backgroundImage =
-        await generatePresignedDownloadUrl(settings.hero.backgroundImage);
+      convertedSettings.hero.backgroundImage = getPublicUrl(
+        settings.hero.backgroundImage
+      );
     }
 
     if (
       settings.hero.backgroundVideo &&
       !settings.hero.backgroundVideo.startsWith("http")
     ) {
-      convertedSettings.hero.backgroundVideo =
-        await generatePresignedDownloadUrl(settings.hero.backgroundVideo);
+      convertedSettings.hero.backgroundVideo = getPublicUrl(
+        settings.hero.backgroundVideo
+      );
     }
 
     if (settings.hero.logo && !settings.hero.logo.startsWith("http")) {
-      convertedSettings.hero.logo = await generatePresignedDownloadUrl(
-        settings.hero.logo
-      );
+      convertedSettings.hero.logo = getPublicUrl(settings.hero.logo);
     }
 
     if (settings.about.image && !settings.about.image.startsWith("http")) {
-      convertedSettings.about.image = await generatePresignedDownloadUrl(
-        settings.about.image
-      );
+      convertedSettings.about.image = getPublicUrl(settings.about.image);
     }
   } catch (error) {
-    console.error("Failed to generate presigned URLs:", error);
+    console.error("Failed to generate public URLs:", error);
     // Return original settings if URL generation fails
     return settings;
   }
