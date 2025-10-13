@@ -3,7 +3,7 @@ title: "Ayden Heaven gặp chấn thương khi khoác áo tuyển, Martinez & Ma
 date: "2025-10-13"
 author: "Phòng Tin Thể thao"
 description: "Cầu thủ trẻ Ayden Heaven dính chấn thương khi thi đấu quốc tế; Martinez và Mazraoui vẫn vắng mặt — cập nhật mới từ Manchester United."
-thumbnail: "/images/news/ayden_heaven_injury.jpg"
+thumbnail: "/images/news/ayden_heaven_injury.jpeg"
 tags: ["Man Utd", "chấn thương", "Heaven", "Martinez", "Mazraoui", "tin mới"]
 ---
 
